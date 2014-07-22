@@ -1,6 +1,7 @@
 .idea
 *.o
 *.dSYM
+/utilities/libutil.a
 /bin/*
 /lib/*
 novas.h
