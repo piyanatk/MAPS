@@ -1,0 +1,4 @@
+// this is a test image parameter file
+File containing image = bobby.fits
+//File containing image = /data2/CYG_PERLEY.FITS
+FITS file = 1

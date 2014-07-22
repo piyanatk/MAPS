@@ -1,0 +1,33 @@
+# Actual layout of the mwa 32T system. (East, North. No Z coords)
+-038.26   140.36 lfd_crossdipole_gp
+-102.30   156.08 lfd_crossdipole_gp
+-095.92   124.66 lfd_crossdipole_gp
+-077.86   097.43 lfd_crossdipole_gp
+-125.40   100.62 lfd_crossdipole_gp
+-116.81   065.18 lfd_crossdipole_gp
+-160.53   054.72 lfd_crossdipole_gp
+-120.68   016.33 lfd_crossdipole_gp
+-105.43  -021.91 lfd_crossdipole_gp
+-137.81  -088.99 lfd_crossdipole_gp
+-106.99  -117.34 lfd_crossdipole_gp
+-081.73  -111.03 lfd_crossdipole_gp
+-087.14  -134.24 lfd_crossdipole_gp
+-063.15  -111.76 lfd_crossdipole_gp
+-038.71  -090.85 lfd_crossdipole_gp
+-024.09  -112.88 lfd_crossdipole_gp
+-002.85  -149.73 lfd_crossdipole_gp
+ 022.68  -093.58 lfd_crossdipole_gp
+ 059.38  -085.44 lfd_crossdipole_gp
+ 122.75  -077.33 lfd_crossdipole_gp
+ 142.91  -083.04 lfd_crossdipole_gp
+ 132.38  -033.43 lfd_crossdipole_gp
+ 176.26   016.87 lfd_crossdipole_gp
+ 177.05   023.43 lfd_crossdipole_gp
+ 170.64   020.26 lfd_crossdipole_gp
+ 107.31   033.03 lfd_crossdipole_gp
+ 121.05   041.47 lfd_crossdipole_gp
+ 089.57   061.27 lfd_crossdipole_gp
+ 121.73   103.56 lfd_crossdipole_gp
+ 045.22   086.43 lfd_crossdipole_gp
+ 032.64   126.03 lfd_crossdipole_gp
+ 004.22   172.95 lfd_crossdipole_gp

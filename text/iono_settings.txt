@@ -1,0 +1,61 @@
+; This is a settings file for the ionospheric model
+;
+;
+; ----------------------- Global Ionosphere Model ---------------------
+; 
+; File name for the global ionospheric model
+; iri_1998_120_0024.fit
+; ---------------------------- Turbulence  ----------------------------
+; 
+; Turbulence
+; Do turbulence?  (1=yes, 0=no)
+DO_TURBULENCE 1
+; X (East) component propagation speed km/s
+TCUBE_VX 0.1
+; Y (North) component propagation speed km/s
+TCUBE_VY 0.1
+; Z (Height) component propagation speed km/s
+TCUBE_VZ 0.0
+; Inner scale
+TCUBE_ISCALE 25.0
+; Outer scale
+TCUBE_OSCALE 5.0
+; Number of elements
+TCUBE_ELEMENTS 128
+; Resolution of grid [km]
+TCUBE_RESOLUTION 1.0
+; RMS amplitude (fraction of density)
+TCUBE_RMS 0.01
+; ------------ Travelling Ionospheric Discontinuity -------------------
+; 
+; Do travelling ionospheric discontinuity? (1=yes, 0=no)
+DO_TID 0
+; Ampitude in fraction of total density
+TID_AMP 0.1
+; Minimum altitude for TID
+TID_AMIN 100.0
+; Maximum altitude for TID
+TID_AMAX 300.0
+; Drift velocity for TID
+TID_VEL 0.15
+; Physical length of the TID at 300 km
+TID_LEN 200.0
+;
+; -------------------  Simple linear gradient ---------------------------
+; Do a simple ionosphere with linear gradient - overrides everything else
+DO_SIMPLE 0
+; Density gradient 
+SIMPLE_GRAD 1.0E11
+; DC density value
+SIMPLE_DC 1.0E13
+; Minimum height [km]
+SIMPLE_ZMIN 100.0
+; Maximum height [km]
+SIMPLE_ZMAX 300.0
+; 
+; -----------------------   Force time in UT -----------------------------
+; =1 Force this time =0 use time in visgen
+DO_FORCE  1
+; Value of forced time in seconds UT
+FORCE_UT 40000
+;

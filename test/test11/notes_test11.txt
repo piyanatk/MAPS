@@ -1,0 +1,60 @@
+Test 11
+=======
+
+Purpose: Test RTS averaging. 
+ - All-sky 500-tile (like) system with phased array
+   crossed-dipole-over-groundplane antennas.
+ - Full pol output.
+ - Uses ionospheric
+ - Uses 45 wide deg FOV.
+ - This sim uses a a single point source.
+
+To run:
+
+0: don't forget to source sim_setup.csh (or .sh)
+
+1: Run visgen & maps2uvfits.
+    _## gives the ellapsed time in SOLAR SECONDS. In obs_spec need to offset ra in SIDEREAL SECONDS.
+
+visgen -n test07 -s MWA_ED -A $SIM/array/mwa_random_500_crossdipole_gp_alt.txt \
+       -V obs_spec_test07_300.000_00 -N -m 1 -Z -O pkscat90_J0023-2502_300.000MHz_oob.txt > visgen.out
+
+maps2uvfits test07.vis test07_gp_alt_J0023-2502_noiono_300.000_00.uvfits \
+            -26.4311 117.357 400.0 $SIM/array/mwa_random_500_crossdipole_gp_alt.txt
+
+visgen -I $SIM/ionomodel/test_turb.netcdf -n test07 -s MWA_ED -A $SIM/array/mwa_random_500_crossdipole_gp_alt.txt \
+       -V obs_spec_test07_300.000_00 -N -m 1 -Z -O pkscat90_J0023-2502_300.000MHz_oob.txt > visgen.out
+
+maps2uvfits test07.vis test07_gp_alt_J0023-2502_withiono_300.000_00.uvfits \
+            -26.4311 117.357 400.0 $SIM/array/mwa_random_500_crossdipole_gp_alt.txt
+
+2: Repeat step 1 for 300.000_02, 300.000_04, 300.000_06, 300.032_00, 300.032_02, ..., 300.096_06
+   Make sure the pkscat90 file names are changed.
+
+3: Run throught the RTS and make sure everything is as expected.
+
+test_rts -b test07_gp_alt_J0023-2502_noiono -q 300.000 -C
+         -f pkscat90_J0023-2502_oob_rts.txt -c 1 -p 1 -t 1 -h 4
+
+# In the log file:
+# - All 16 MAPS files should be read in and listed near the top of the file.
+# - Gain lines, starting with "   -> ", should end with something very close to {1.000000 1.000000}
+#   e.g., "         -> ( 3.9917   -0.0,  3.9605   -0.0,  0.0080 +180.0, 0.0081 +180.0) {1.000003 1.000003}"
+# - Ionospheric refraction lines (l & m offsets given in curly brackets) should have values close to zero
+#   e.g., "   1 (  1): az/za:  76.32/ 5.38, {l  +0.0086,m  -0.1142} rerotating"
+
+test_rts -b test07_gp_alt_J0023-2502_noiono -q 300.000 -C
+         -f pkscat90_J0023-2502_oob_rts.txt -c 1 -p 1 -t 4 -h 1 -S
+
+# The log file should be similar to the previous one, but with only 1
+# frequency channel and 4 time steps (although here only 2 seconds long.
+# - All four time steps should be fairly similar to each other.
+
+test_rts -b test07_gp_alt_J0023-2502_withiono -q 300.000 -C
+         -f pkscat90_J0023-2502_oob_rts.txt -c 1 -p 1 -t 4 -h 1 -S
+
+# The log file should be similar to the previous one, but the first step will
+# have an offset of an arcminute or so, and an associated gain error.
+# Subsequent time steps should be much closer to the noiono case.
+
+

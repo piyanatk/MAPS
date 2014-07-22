@@ -1,0 +1,87 @@
+Test 05
+=======
+
+Purpose: Test of all-sky 500-tile (like) system with phased array
+crossed-dipole-over-groundplane antennas in the stations. Full pol output.
+Uses "2 pi" wide sky for oversampling in the image/UV plane.
+Does not do ionospheric stuff at all.
+This sim uses a pre-canned list of point sources.
+
+To run:
+0: don't forget to source sim_setup.csh (or .sh)
+
+1: run LOsim
+LOsim test05 > /dev/null
+s
+x
+
+2: run im2uv
+MAPS_im2uv -i test05_Brightness.fts -o test05_Visibility.dat -n 4
+
+3: run visgen
+visgen -n test05 -s MWA_ED -A $SIM/array/mwa_512_crossdipole_gp_20080714.txt -G test05_Visibility.dat -V obs_spec_test05 -N -m 0 > visgen.out
+
+4: run maps2uvfits
+maps2uvfits test05.vis test05.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_512_crossdipole_gp_20080714.txt
+
+5: image the snapshot:
+example in miriad, but you can use whatever you want.
+miriad
+rm -rf test05.uv
+fits in='test05.uvfits' out='test05.uv' op='uvin'
+invert vis=test05.uv beam=test05.beam map=test05.map imsize=2048,2048 cellsize=90
+convert to an image:
+fits in='test05.map' out='test05.fits' op='xyout'
+
+Expected result:
+Sky image is all-sky 6600x6600 pixels. The whole sky goes into 6600/(pi/2)= 4201 pixel in one dimension.
+Pixel angular size (from LOsim's point of view) is 0.000476 rad/pixel or 1.6363 arcmin/pixel.
+Separation between spots is 15 deg = 15*60/1.6363 = 550 pixels
+actual sky offset should be (15*!pi/180)/sin(15*!pi/180)*15 = 15.17 deg.
+
+After LOsim:
+'test05_Brightness.fts' created. file size 174242880 bytes. Examining in DS9, there are 5 point sources at locations:
+centre: (x,y) 3300,3300 RA 00:00:00 DEC -26:32 peak: 1.07e9
+left:   (x,y) 2750,3300 RA 22:52:31 DEC -25:32 peak: 1.06e9
+right:  (x,y) 3851,3300 RA 01:07:29 DEC -25:32 peak: 1.06e9
+top:    (x,y) 3300,3851 RA 00:00:00 DEC -11:22 peak: 1.06e9
+bottom: (x,y) 3300,2751 RA 00:00:00 DEC -41:42 peak: 1.06e9
+
+After MAPS_im2uv:
+file test05_Visibility.dat size 696960008 bytes
+
+After visgen:
+file test05.vis size 11976144
+
+After maps2uvfits:
+file test05.uvfits size 4046400
+
+After imaging:
+spots appear in correct places. fluxes:
+center: 856
+left:   292
+right:  300
+top:    316
+bottom: 316
+
+expected relative voltage amplitudes (140MHz):
+array factor for 15 deg: 0.632
+end_fire: zenith: 1.71
+          15 deg: 1.67
+proj:     0.966 (for East/West spots only)
+total: (NS) 0.617
+       (EW) 0.596
+
+sqrt(300/856.)= 0.592
+sqrt(316/856.)= 0.607
+
+Power of NW spots is a little low, but right ballpark. Might be due to pointing centre not exactly at zenith.
+
+Testing the beamforming (with IDL):
+- set beam_printed=0 in makebeam.c and recompile/install
+- run the code with -m -1 and direct stdout/stderr to visgen.out
+- run grep -A 32 "Beam Mag" visgen.out > mag.txt
+- in idl, load the ascii_template: restore,'idl_ascii_template.dat'
+- mag = read_ascii('mag.txt',data_start=1,template=t)
+- m = mag.field01
+- tvscl,m ;etc.

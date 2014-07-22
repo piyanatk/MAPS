@@ -1,0 +1,13 @@
+
+Purpose: test VLBI station descriptions
+
+
+
+visgen -n test12 -s GREENWICH -A $SIM/array/merlin4.txt -Z -V obs_spec_test12 -N -m 1 -O oob_list.txt > visgen.out
+
+4: run maps2uvfits
+maps2uvfits test12.vis test12.uvfits 32.0 0.0 0.0 $SIM/array/merlin4.txt
+
+fits op='uvin' in='test12.uvfits' out=test.uv
+uvplt device='/xs' vis=test.uv axis=uc,vc options=nobase
+

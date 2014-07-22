@@ -1,0 +1,10 @@
+Field of view center right ascension = 00:00:00
+Field of view center declination = -26d 25' 52"
+Field of view x-size = 162000.0 arc-seconds
+Field of view y-size = 162000.0 arc-seconds
+Start time = 2006-9-22 00:00:00.00
+End time = 2006-9-22 00:00:02.00
+Observation frequency = 140.0
+Bandwidth = 0.032
+Spectral points = 1
+Integration time = 2

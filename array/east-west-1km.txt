@@ -1,0 +1,7 @@
+# E,N,H (meters)
+0   0 lfd_basic
+30  0 lfd_basic
+428 0 lfd_basic
+612 0 lfd_basic
+719 0 lfd_basic
+

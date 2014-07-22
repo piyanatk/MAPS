@@ -1,0 +1,79 @@
+Test 02
+=======
+
+Purpose: Basic test of all-sky 500-tile (like) system with phased array
+dipole-over-groundplane antennas in the
+stations. Does not do ionospheric stuff at all.
+This sim uses a pre-canned list of point sources.
+
+In this sim we "trick" LOsim and visgen into doing all-sky sims even though the input FOV is listed as
+412530 arcsec. Note that 412530 is exactly 2 radian. Since the input sky is sine projected, the pixel angular size
+is only correct at the center of the image. Specifying FOV of 2 radian effectively makes the input image 2pi radian,
+hence all-sky.
+
+To run:
+0: don't forget to source sim_setup.csh (or .sh)
+
+1: run LOsim
+LOsim test02 > /dev/null
+s
+x
+
+2: run im2uv
+MAPS_im2uv -i test02_Brightness.fts -o test02_Visibility.dat -n 4
+
+3: run visgen
+visgen -n test02 -s MWA_ED -A $SIM/array/mwa_random_500_dipole_gp.txt -G test02_Visibility.dat -V obs_spec_test02 -N -m 0 > visgen.out
+
+4: run maps2uvfits
+maps2uvfits test02.vis test02.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_random_500_dipole_gp.txt
+
+5: image the snapshot:
+example in miriad, but you can use whatever you want.
+miriad
+rm -rf test02.uv
+fits in='test02.uvfits' out='test02.uv' op='uvin'
+rm -rf test02.beam test02.map
+invert vis=test02.uv beam=test02.beam map=test02.map imsize=2048,2048 cell=201.43
+convert to an image:
+fits in='test02.map' out='test02.fits' op='xyout'
+
+Expected result:
+Sky image is all-sky 4400x4400 pixels. The whole sky should fit exactly into this along one axis.
+Pixel angular size (from LOsim's point of view) is 0.000454545 rad/pixel or 1.56261 arcmin/pixel.
+Separation between spots is 15 deg = 15*60/1.56261 = 575.96 pixels
+
+After LOsim:
+'test02_Brightness.fts' created. file size 77443200 bytes. Examining in DS9, there are 5 point sources at locations:
+centre: (x,y) 2201,2200.8 RA 00:00:00 DEC -26:25:05 peak: 1.138e9
+left:   (x,y) 1625,2200.8 RA 22:52:35 DEC -25:26:43 peak: 1.069e9
+right:  (x,y) 2776,2200.9 RA 01:07:25 DEC -25:26:43 peak: 1.06e9
+top:    (x,y) 2201,2777   RA 00:00:00 DEC -11:14:43 peak: 1.06e9
+bottom: (x,y) 2201,1625   RA 00:00:00 DEC -41:36:45 peak: 1.06e9
+
+After MAPS_im2uv:
+file test02_Visibility.dat size 309760008 bytes
+
+After visgen:
+file test02.vis size 16467148
+
+After maps2uvfits:
+file test02.uvfits size 4046400
+
+After imaging:
+spots appear in correct places. fluxes:
+center: 294
+left:   103
+right:  101
+top:    109
+bottom: 109
+
+expected relative voltage amplitudes (140MHz):
+array factor for 15 deg: 0.632
+end_fire: zenith: 1.71
+          15 deg: 1.67
+total: 0.617
+
+301*(0.617)^2 = 115, so numbers are in correct ballpark. Since the sources are resolved, some of the flux is spread around, which the quick
+look in kvis/ds9 doesn't catch.
+

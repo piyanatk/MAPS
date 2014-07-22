@@ -1,0 +1,18 @@
+FOV_center_RA = 0:0:0
+FOV_center_Dec = -26:25:52
+// FOV in arcsec
+FOV_size_RA = 36000.0
+FOV_size_Dec = 36000.0
+Corr_int_time = 2.0
+Corr_chan_bw = 0.032
+
+// VLA
+//Scan_start = GHA 7.18
+// MWA
+Scan_start = GHA -7.824
+// scan duration in seconds
+  Scan_duration = 10.0
+// freq, bandwidth in MHz
+  Channel = 142:0.128
+//  Channel = 142:0.128
+Endscan

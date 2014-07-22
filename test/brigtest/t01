@@ -1,0 +1,23 @@
+#!/bin/bash
+
+MAPS_im2uv -i testprj1.fits -o testprj1_visibility.dat -n 0.0304617 
+
+visgen -n testprj1 -s MWA_ED -A ~/maps/array/mwa_32.txt  \
+       -G testprj1_visibility.dat -V obs_spec_testprj.txt -N -m 0
+
+maps2uvfits testprj1.vis testprj1.uvfits -26.4311 114.85 400.0 \
+	    $SIM/array/mwa_32.txt
+
+rm -rf testprj1.uv testprj1.map testprj1.beam testprj1.clean testprj1.restor
+rm -rf testprj1.uv testprj1.map testprj1.beam testprj1.clean testprj1.restor
+
+fits in='testprj1.uvfits' out='testprj1.uv' op='uvin'
+
+invert vis=testprj1.uv beam=testprj1.beam map=testprj1.map imsize=1024,1024
+
+clean map=testprj1.map beam=testprj1.beam out=testprj1.clean niters=10000
+
+restor model=testprj1.clean beam=testprj1.beam map=testprj1.map \
+       out=testprj1.restor
+
+fits op='xyout' in='testprj1.restor' out='proj1res.fits'

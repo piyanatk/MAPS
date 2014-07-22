@@ -1,0 +1,1 @@
+all mwa_128 layout should be used with MWA_128 site name (see $SIM/text/sites.txt)

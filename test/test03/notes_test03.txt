@@ -1,0 +1,56 @@
+Test 03
+=======
+
+Purpose: Basic test of wide field MWA 32 (like) system with phased array
+stations having dual pol receptors. Does not do ionospheric stuff at all.
+This is for basic polarised response.
+
+To run:
+1: run LOsim
+LOsim test03 > losim.out
+s
+x
+
+2: run im2uv
+MAPS_im2uv -i test03_Brightness.fts -o test03_Visibility.dat -n 0.274156
+
+3: run visgen
+visgen -n test03 -s MWA_ED -A $SIM/array/mwa_32_simple_crossdipole.txt -G test03_Visibility.dat -V obs_spec_test03 -N -m 0 > visgen.out
+
+4: run maps2uvfits
+maps2uvfits test03.vis test03.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_32_simple_crossdipole.txt
+
+5: image the snapshot:
+example in miriad, but you can use whatever you want.
+miriad
+rm -rf test03.uv test03.beam test03.clean test03.map test03.restor
+fits in='test03.uvfits' out='test03.uv' op='uvin'
+rm -rf test03.beam test03.map
+invert vis=test03.uv beam=test03.beam map=test03.map imsize=512,512 cellsize=60
+optionally clean and restore:
+clean map=test03.map beam=test03.beam out=test03.clean niters=1000
+restor model=test03.clean beam=test03.beam map=test03.map out=test03.restor
+
+Expected result:
+After LOsim: file "test03_Brightness.fts" will be created. This should be 512x512 pixels with 3 point(ish) sources in it. Viewing this file in DS9 or some FITS WCS aware viewer should have the sources at:
+RA 0      , DEC -26:32.   value, 4.96e6
+RA 23:53:38 DEC -29:01:49 value, 1.33e7
+RA 00:07:17 DEC -24:09:10 value, 7.67e6
+Note that East will be to the right in this image.
+
+After MAPS_im2uv:
+There should be a file "test03_Visibility.dat" with size 4194312 bytes.
+
+After visgen:
+There should be a file "test03.vis" (size 135096 bytes) and "test03.stn" (13312 bytes).
+
+After maps2uvfits:
+There should be a file "test03.uvfits", size 48960 bytes.
+
+After imaging:
+The 3 sources should be in the dirty beam at loctions above.
+source fluxes should be:
+1.0Jy/beam (centre)
+1.71      RA 00:07:17 DEC -24:09:10
+2.68	   RA 23:53:38 DEC -29:01:49
+the reduced fluxes are because the array uses phased array tiles which reduce power away from the zenith.

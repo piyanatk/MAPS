@@ -1,0 +1,61 @@
+Test 07a
+=======
+
+Purpose: Test of all-sky 500-tile (like) system with phased array
+crossed-dipole-over-groundplane antennas in the stations. Full pol output.
+Uses ionospheric
+Uses 45 wide deg FOV.
+This sim uses a pre-canned list of point sources.
+
+To run:
+0: don't forget to source sim_setup.csh (or .sh)
+
+# make a bunch of oob sources with perl script:
+./make_oob_list.pl > oob_list.txt
+
+3: run visgen
+visgen -n test07 -s MWA_ED -A $SIM/array/mwa_random_500_dipole_gp.txt -O oob_list.txt -V obs_spec_test07 -N -m 0 -Z > visgen.out
+visgen -I $SIM/ionomodel/test_turb.netcdf -n test07 -s MWA_ED -A $SIM/array/mwa_random_500_dipole_gp.txt -O oob_list.txt -V obs_spec_test07 -N -m 0 -Z > visgen.out
+... or with big oob list...
+visgen -n test07 -s MWA_ED -A $SIM/array/mwa_random_500_dipole_gp.txt -O oob_list_big.txt -V obs_spec_test07 -N -m 1 -Z > visgen.out
+visgen -I $SIM/ionomodel/test_turb.netcdf -n test07 -s MWA_ED -A $SIM/array/mwa_random_500_dipole_gp.txt -O oob_list_big.txt -V obs_spec_test07 -N -m 1 -Z > visgen.out
+
+4: run maps2uvfits
+maps2uvfits test07.vis test07.uvfits -26.4311 -117.357 400.0 $SIM/array/mwa_random_500_dipole_gp.txt
+mv test07.uvfits test07_noiono.uvfits
+ or
+mv test07.uvfits test07_withiono.uvfits
+
+5: image the snapshot:
+example in miriad, but you can use whatever you want.
+miriad
+rm -rf test07_noiono.uv
+fits in='test07_noiono.uvfits' out='test07_noiono.uv' op='uvin'
+rm -rf test07_noiono.beam test07_noiono.map
+invert vis=test07_noiono.uv beam=test07_noiono.beam map=test07_noiono.map imsize=2048,2048 options=double
+#convert to an image:
+#fits in='test07.map' out='test07.fits' op='xyout'
+
+rm -rf test07_withiono.uv
+fits in='test07_withiono.uvfits' out='test07_withiono.uv' op='uvin'
+rm -rf test07_withiono.beam test07_withiono.map
+invert vis=test07_withiono.uv beam=test07_withiono.beam map=test07_withiono.map imsize=2048,2048 options=double
+
+
+# clean and restore to use point source searcher:
+rm -rf test07_noiono.clean test07_noiono.restor
+clean map=test07_noiono.map beam=test07_noiono.beam out=test07_noiono.clean niters=20000 options=positive
+restor model=test07_noiono.clean beam=test07_noiono.beam map=test07_noiono.map out=test07_noiono.restor
+
+rm -rf test07_withiono.clean test07_withiono.restor
+clean map=test07_withiono.map beam=test07_withiono.beam out=test07_withiono.clean niters=30000 options=positive
+restor model=test07_withiono.clean beam=test07_withiono.beam map=test07_withiono.map out=test07_withiono.restor
+
+# find locations of sources
+imsad in=test07_noiono.restor device='/xs' options=hist,point clip=30 out=imsad_noiono.out > imsad_noiono.log
+grep "Fitted offsets" imsad_noiono.log | cut -b16-36 > positions_noiono.txt
+
+imsad in=test07_withiono.restor device='/xs' options=hist,point clip=6 out=imsad_withiono.out > imsad_withiono.log
+grep "Fitted offsets" imsad_withiono.log | cut -b16-36 > positions_withiono.txt
+
+

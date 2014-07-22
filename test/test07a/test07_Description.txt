@@ -1,0 +1,18 @@
+// This is a test file
+// Lines beginning with "//" are comments and are ignored
+
+Simulation name = test07
+Title = MAPS test 07
+
+Brightness grid x-N = 6000
+Brightness grid y-N = 6000
+
+Visibility grid x-log2N = 13
+Visibility grid y-log2N = 13
+
+Source list name = test07
+Observation name = test07
+// Image name = test
+Out-of-beam source list name = ???1
+Station list name = test07
+Ionosphere parameters name = ???3

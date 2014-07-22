@@ -1,0 +1,4 @@
+vis      = test05.uv
+axis     = uvdist,amp
+options  = nobase
+device   = '/xs'

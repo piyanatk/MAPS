@@ -1,0 +1,66 @@
+MAPS - The MIT Array Performance Simulator
+==========================================
+
+MAPS is a collection of programs to simulate the operation of a radio 
+interferometer. Please see the manual in doc/manual.html for details.
+
+Requirements:
+------------
+MPICH/MPICH2: Required for visgen. The MPICH installation needs to install the
+	compiler script "mpicc" so that visgen can be compiled.
+CFITSIO: Required for maps2uvfits, MAPS_im2uv, MAPS_makesky.
+FFTW3:  Required for MAPS_im2uv.
+NETCDF: Required for generate_ionoscreen
+F77 compiler. (Newer fortran compilers are probably OK, but you might need 
+               to tweak a makefile.)
+wcslib v4.2 or better. (http://www.atnf.csiro.au/people/mcalabre/WCS/)
+
+Typically CFITSIO installs its header files in the non-standard 
+          location /usr/include/cfitsio/.
+The Makefiles have this location included by default. If the cfitsio
+headers go elsewhere, the makefile "-I/usr/include/cfitsio" directives
+will need to be changed.
+Likewise, FFTW3 requires header files (fftw3.h etc) and 
+      libraries (libfftw3.so etc).
+If these are installed in non-standard locations, then the makefiles will need
+updated with "-I/location_of_headers -L/location_of_libraries"
+
+Installing:
+----------
+
+1- setup
+- Unpack MAPS. A base directory "MAPS" will be created with a number 
+    of files and directories in it.
+- setup scripts: The MAPS base directory contains two files "sim_setup.csh" 
+    and "sim_setup.sh". These scripts must be "sourced" by your shell 
+    before MAPS will compile and run. The line that sets the environment 
+    variable "SIM" *must* be changed to be the base maps installtion.
+- source the setup script. Either "source sim_setup.csh" for csh/tcsh 
+    or ". sim_setup.sh" for sh/bash like shells.
+- optionally you can put a command to source the setup scripts in your 
+    dot files.
+
+2- compile
+
+There is a top-level Makefile. Type "make" at the top level MAPS directory to
+make everything. You can also "make clean" to clean object files and
+libraries. You can build/clean in individual directories too, but start with the
+"utilities" directory if you do.
+
+
+Configuration/Data files:
+------------------------
+array/:
+This directory contains defintions of interferometer array station locations. A
+"station" can consist of one or more individual receivers that are phased
+together.
+
+
+test/:
+This directory contains test configurations and example output files.
+
+stn_layout/:
+This directory contains files which specify the location of receivers within a
+single station.
+
+

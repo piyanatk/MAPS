@@ -1,0 +1,6 @@
+HeightProfile1.txt (night, solar max)
+HeightProfile2.txt (day, solar max)
+HeightProfile3.txt (night, solar min)
+HeightProfile4.txt (day, solar min)
+HeightProfile5.txt (night, solar med)
+HeightProfile6.txt (day, solar med)

@@ -1,0 +1,8 @@
+// Type  Intensity(Jy?)     Q    U    V    SpecIx     x     y   Major axis  Minor axis   PA(deg)
+Circular 1               0    0    0        0     0000.0     00.0   300.0      300.0        0.0
+Circular 1               0    0    0        0     8500.0   6000.0   300.0      300.0        0.0
+Circular 1               0    0    0        0    -5000.0  -9000.0   300.0      300.0        0.0
+Circular 1               0    0    0        0     6000.0   8500.0   300.0      300.0        0.0
+Circular 1               0    0    0        0     0000.0   5000.0   300.0      300.0        0.0
+Circular 1               0    0    0        0    -9000.0  -5000.0   300.0      300.0        0.0
+Circular 1               0    0    0        0    -4000.0  -4000.0   300.0      300.0        0.0

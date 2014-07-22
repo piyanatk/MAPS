@@ -1,0 +1,8 @@
+# array layout file (new format)
+# blank lines and lines beginning with # are ignored
+# names should not contain spaces
+# Format: station_name X Y Z layoutname el_low el_high SEFD
+JODRELL2  3822846.760  153802.280  5086285.900  dish_30m_unpol  5  90  350
+DARNHALL  3829087.908  169568.957  5081082.346  dish_30m_unpol  5  90  356.4
+KNOCKIN   3860084.898  202105.039  5056568.848  dish_30m_unpol  5  90  356.4
+DEFFORD   3923442.566  146914.330  5009755.125  dish_30m_unpol  5  90  380 

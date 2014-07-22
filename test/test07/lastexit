@@ -1,0 +1,5 @@
+options=nobase
+stokes=xx
+axis=uvdist,amp
+vis=test07_oob_noiono.uv
+device='/xs'

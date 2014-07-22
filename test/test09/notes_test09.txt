@@ -1,0 +1,61 @@
+Test 09
+=======
+
+Purpose: Test the response of polarised station arrays when pointing away from the zenith.
+        Uses a 500-station array with point sources and LOsim sources.
+        Phase center and pointing center are the same.
+
+        For the LOsim sources, the center of the LOsim output image is defined as the phase
+        center, so we must use something smaller than all-sky.
+
+
+OOB only version:
+=================
+
+To run:
+0) don't forget to source sim_setup.csh (or .sh)
+
+# make a bunch of oob sources with perl script:
+./make_oob_list.pl > oob_list.txt
+
+1) run visgen
+visgen -n test09 -s MWA_ED -A $SIM/array/mwa_random_500_crossdipole_gp.txt -O oob_list.txt -V obs_spec_test09 -N -m 1 -Z > visgen.out
+
+2) convert to UVFITS
+maps2uvfits test09.vis test09.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_random_500_crossdipole_gp.txt
+
+3) image the snapshot:
+# example in miriad, but you can use whatever you want.
+rm -rf test09.uv
+fits in='test09.uvfits' out='test09.uv' op='uvin'
+rm -rf test09.beam test09.map
+invert vis=test09.uv beam=test09.beam map=test09.map imsize=2048,2048 stokes=xx
+fits op=xyout in=test09.map out=test09.fits
+
+
+LOsim version :
+==============
+1) run LOsim
+LOsim test09 > /dev/null
+s
+x
+
+2) run im2uv
+MAPS_im2uv -i test09_Brightness.fts -o test09_Visibility.dat -n 0.25
+
+3) run visgen
+visgen -n test09 -s MWA_ED -A $SIM/array/mwa_random_500_simpletile.txt -G test09_Visibility.dat -V obs_spec_test09 -N -m 0 > visgen.out
+visgen -n test09 -s MWA_ED -A $SIM/array/mwa_random_500_crossdipole_gp.txt -G test09_Visibility.dat -V obs_spec_test09 -N -m 0 > visgen.out
+#visgen -n test09 -s MWA_ED -A $SIM/array/mwa_random_500.txt -G test09_Visibility.dat -V obs_spec_test09 -N -m 0 > visgen.out
+
+4) convert to UVFITS
+maps2uvfits test09.vis test09.uvfits -26.4311 -117.357 400.0 $SIM/array/mwa_random_500_simpletile.txt
+
+5) image the snapshot:
+# example in miriad, but you can use whatever you want.
+rm -rf test09.uv
+fits in='test09.uvfits' out='test09.uv' op='uvin'
+rm -rf test09.beam test09.map
+invert vis=test09.uv beam=test09.beam map=test09.map imsize=2048,2048
+fits op=xyout in=test09.map out=test09.fits
+

@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+  <title>obs_spec</title>
+</head>
+<body>
+The visgen observation specification ("obs_spec") file tells visgen
+what to do.<br>
+<br>
+The file has two parts: the first part sets some "global" options like
+the correlator settings and the properties of the field of view. The
+second part consists of one <span style="font-style: italic;">or more</span>
+"scans" where a scan is analogous to what might happen on a real radio
+telescope where one says "track this source for 10 minutes", sometimes
+called a "dwell time" of 10 minutes. That 10 minute track would be a
+"scan".<br>
+<br>
+Blank lines and lines beginning with '//' are ignored.<br>
+<br>
+Global options:<br>
+The global options consist of key-value pairs with '=' in between. The
+following are compulsory (with example settings shown):<br>
+<br>
+<span style="font-family: monospace;">// RA/DEC of the field center: </span><span
+ style="font-family: monospace;">HH:MM:SS.SSS, </span><span
+ style="font-family: monospace;">DD:MM:SS.SSS</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">FOV_center_RA = 16:36:31.011362</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">FOV_center_Dec = +62:40:10.09908</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// Angular size of the field (in
+arcsec) of view assuming a flat sky</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">FOV_size_RA = 3600.0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">FOV_size_Dec = 3600.0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// Correlator settings: dump time
+(seconds), channel bandwidth (MHz)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Corr_int_time = 1.0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Corr_chan_bw = 0.032</span><br
+ style="font-family: monospace;">
+<br>
+The following are optional, again with example settings:<br>
+<br>
+<span style="font-family: monospace;">// set the antenna pointing
+centers to be different to the correlator phase center</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// (decimal hours, decimal
+degrees)</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">PNT_center_RA = 15.5</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">PNT_center_DEC = -26.43</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// implement time and/or
+frequency averaging in the correlator</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// split each time dump and/or
+freq channel into sub channels and integrate over them</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// useful for simulations where
+time and/or bandwidth smearing is important</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// must be an even number, or
+zero.</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">Time_cells = 10</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Freq_cells = 10</span><br
+ style="font-family: monospace;">
+<br>
+The <span style="font-family: monospace;">PNT_center_RA</span> and <span
+ style="font-family: monospace;">PNT_center_DEC</span> params tell
+visgen that the station pointing direction is different to the phase
+center. Normally, by specifying the <span
+ style="font-family: monospace;">FOV_center</span>, it is assumed that
+the correlator phase center tracks the field as well as the station
+pointing. Note that <span style="font-family: monospace;">PNT_center</span>
+is in decimal hours and degrees. (It is just too easy to make mistakes
+with hours/minutes/seconds.)<br>
+<br>
+The <span style="font-family: monospace;">Time_cells</span> and <span
+ style="font-family: monospace;">Freq_cells</span> tell visgen to
+internally split each correlator dump time (<span
+ style="font-family: monospace;">Corr_int_time</span>) and channel (<span
+ style="font-family: monospace;">Corr_chan_bw</span>), into smaller
+chunks and integrate over them to generate the actual visibility. The
+parameter must be zero or an even number. (Zero means no averaging,
+nonzero specifies the number of sub-units to integrate over.) This is
+required for realistic simulations where the fringe frequency or
+visibility frequency is important. See section 4.3 and 4.4 of <a
+ href="http://adsabs.harvard.edu/abs/2001isra.book.....T">TMS</a>.
+(Note visgen does not check whether you should be using these params.
+It is up to you.)<br>
+<br>
+<br>
+<span style="text-decoration: underline;">Scan definition</span>:<br>
+Scans define a "track" of the telescope for some period of time as well
+as the IF and bandwidth of the observation. A scan can be specified in
+some absolute time or a relative time in the form of the Greenwich Hour
+Angle. Note that when specifying the absolute time, visgen will
+calculate the HA from this using the array location, but precision
+effects such as precession and nutation are not included. Visgen will
+calculate the visibilities as though the telescope was tracking/phasing
+correctly, but external packages that use the resulting visibility data
+will calculate things like az/el of the pointing to be a little
+different.<br>
+<br>
+The IF and IF bandwidth in a scan are determined by the (confusingly
+named) "Channel" parameter. The parameter is actually two numbers
+separated by a colon: the IF frequency and the IF bandwidth both in MHz.<br>
+The number of actual frequency channels that will be generated by
+visgen in the IF is determined by dividing the IF bandwidth by the
+Corr_chan_bw parameter. There will always be at least one channel in
+the IF.<br>
+<br>
+<span style="font-family: monospace;">// specify relative time:
+Greenwich hour angle in decimal hours.</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Scan_start = GHA -7.8237889</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// scan duration in seconds</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; &nbsp; Scan_duration = 2.0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// IF freq, bandwidth in MHz</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; &nbsp; Channel = 140:0.032</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Endscan</span><br
+ style="font-family: monospace;">
+<br>
+OR absolute time<br>
+<br>
+<span style="font-family: monospace;">// start date,time
+year:dayofyear:hour:min:sec<br>
+Scan_start = 2006:265:16:00:00</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">// scan duration in seconds</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; Scan_duration = 2.0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// freq, bandwidth in MHz</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; Channel = 140:0.032</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Endscan</span><br>
+<br>
+In theory, visgen supports multiple IFs per scan. In practice, it is
+difficult to generate UVFITS files with multiple IFs, so it is better
+to just run separate simulations with the different IFs.<br>
+<br>
+<br>
+An example of a simple obs_spec file follows.<br>
+<br>
+<span style="font-family: monospace;">FOV_center_RA = 0:0:0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">FOV_center_Dec = -26:25:52</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// FOV in arcsec</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">FOV_size_RA = 36000.0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">FOV_size_Dec = 36000.0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Corr_int_time = 2.0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Corr_chan_bw = 0.032</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;">Scan_start = 2006:265:16:00:00</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// scan duration in seconds</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; Scan_duration = 8.0</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">// freq, bandwidth in MHz</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp; Channel = 140:0.032</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Endscan</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<br>
+</body>
+</html>

@@ -1,0 +1,55 @@
+Test 01
+=======
+
+Purpose: Basic test of OOB sources.
+
+To run:
+
+1: run visgen
+visgen -n test06 -s MWA_ED -A $SIM/array/mwa_32_simple_crossdipole.txt -V obs_spec_test06_gha -N -m 0 -O oob_list.txt -Z > visgen.out
+visgen -n test06 -s MWA_ED -A $SIM/array/east-west-1km.txt -V obs_spec_test06_gha -N -m 0 -O oob_list.txt -Z > visgen.out
+
+2: run maps2uvfits
+maps2uvfits test06.vis test06.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_32_simple_crossdipole.txt
+maps2uvfits test06.vis test06.uvfits -26.4311 117.357 400.0 $SIM/array/east-west-1km.txt
+
+3: image the snapshot:
+example in miriad, but you can use whatever you want.
+miriad
+rm -rf test06.uv
+fits in='test06.uvfits' out='test06.uv' op='uvin'
+rm -rf test06*.map test06.beam
+invert vis=test06.uv beam=test06.beam map=test06_I.map,test06_Q.map,test06_U.map,test06_V.map imsize=1024,1024 stokes='I,Q,U,V' options=double
+optionally clean and restore:
+rm -rf  test06*.clean test06*.restor
+clean map=test06_I.map beam=test06.beam out=test06_I.clean niters=5000 options=negstop gain=0.02
+restor model=test06_I.clean beam=test06.beam map=test06_I.map out=test06_I.restor
+fits op='xyout' in='test06.restor' out='test06.fits'
+
+Expected result:
+After LOsim: file "test06_Brightness.fts" will be created. This should be 1024x1024 pixels with 3 point(ish) sources in it. Viewing this file in DS9 or some FITS WCS aware viewer should have the sources at:
+RA 0      , DEC -26:32.   value, 4.96e6
+RA 23:53:38 DEC -29:01:49 value, 1.33e7
+RA 00:07:17 DEC -24:09:10 value, 7.67e6
+Note that East will be to the right in this image if you use ds9.
+
+After MAPS_im2uv:
+There should be a file "test06_Visibility.dat" with size 4194312 bytes.
+
+After visgen:
+There should be a file "test06.vis" (size 135096 bytes) and "test06.stn" (13312 bytes).
+
+After maps2uvfits:
+There should be a file "test06.uvfits", size 48960 bytes.
+
+
+make some fake vis with miriad:
+===============================
+make a source file with one source: echo "1.0, 0, 0" > mirsource.txt
+make an array file: cat $SIM/array/mwa_32_simple_crossdipole.txt > mirarr.txt
+change last item in lines to 0, swap first and second cols
+
+rm -rf mirtest.uv
+uvgen source=mirsource.txt ant=mirarr.txt baseunit=-3.33564 corr=0 freq=0.14,0 radec=0,-26.43 harange=0,0.0001,0.0001 lat=26.4311 out=mirtest.uv
+uvgen source=mirsource.txt ant=mir-ew1km.txt baseunit=-3.33564 corr=0 freq=0.14,0 radec=0,-26.43 harange=0,0.0001,0.0001 lat=26.4311 out=mirtest.uv
+

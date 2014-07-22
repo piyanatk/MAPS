@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+  <title>visgen_binary_format</title>
+</head>
+<body>
+visgen output binary file format.<br>
+<br>
+<span style="font-family: monospace;">Shorthand:</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">TIMBLCK = 8-byte string
+consisting of "timblck\0"</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">VISBLCK = 8-byte string
+consisting of "visblck\0"</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">main_header = (simname, time,
+field_center, field_name, stokes, n_time_blocks)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">time_block_header = (start_time,
+duration, integration_time, n_IFs, freq_span*n_IFs)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">freq_span = (IF_frequency,
+bandwidth)</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">visblock&nbsp; =
+(u,v,w,integration_sequence_number,station1, station2, n_freq
+(REDUNDANT: same as n_IF), visfreq*n_freq)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visfreq&nbsp;&nbsp; =
+(freq_index,n_corr_chan, visgroup*n_corr_chan)<br>
+visgroup&nbsp; = (corr_chan,flag,weight,complex_vis*4)<br
+ style="font-family: monospace;">
+</span><br style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;">main_header </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">TIMBLCK</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">time_block_header (time dump 0,
+IF 0)</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">VISBLCK</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visblock (baseline 0)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visfreq&nbsp; (freq channel 0)<br>
+visgroup * n_corr_chan<br style="font-family: monospace;">
+</span><span style="font-family: monospace;">...</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">VISBLCK</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visblock (</span><span
+ style="font-family: monospace;">baseline 0</span><span
+ style="font-family: monospace;">)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visfreq&nbsp; (freq channel
+n_freq-1)</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">visgroup * n_corr_chan<br>
+</span><span style="font-family: monospace;">VISBLCK</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visblock (baseline 1)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visfreq&nbsp; (freq channel 0)</span><span
+ style="font-family: monospace;">...</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visgroup * n_corr_chan</span><br>
+<span style="font-family: monospace;">...</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">VISBLCK</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visblock (baseline N-1)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visfreq</span><span
+ style="font-family: monospace;">&nbsp; (freq channel </span><span
+ style="font-family: monospace;">n_freq-1</span><span
+ style="font-family: monospace;">)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visgroup * n_corr_chan</span><span
+ style="font-family: monospace;"></span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">VISBLCK</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visblock (baseline 0, IF 1 (if
+applicable) )</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">visfreq</span><span
+ style="font-family: monospace;">&nbsp; (</span><span
+ style="font-family: monospace;">freq channel n_freq-1</span><span
+ style="font-family: monospace;">)</span><span
+ style="font-family: monospace;"></span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">visgroup * n_corr_chan</span><br>
+<span style="font-family: monospace;">...<br>
+...<br>
+TIMBLCK</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"><span
+ style="font-family: monospace;">time_block_header (time dump 1)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">...</span><br
+ style="font-family: monospace;">
+<br>
+</span>
+</body>
+</html>

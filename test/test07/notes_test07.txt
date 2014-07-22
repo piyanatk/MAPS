@@ -1,0 +1,62 @@
+Test 07
+=======
+
+Purpose: Test of all-sky 32-tile (like) system with phased array
+crossed-dipole-over-groundplane antennas in the stations. Full pol output.
+Uses ionospheric
+Uses 45 wide deg FOV.
+This sim uses a pre-canned list of point sources.
+
+To run:
+0: don't forget to source sim_setup.csh (or .sh)
+
+1: run LOsim
+LOsim test07 > /dev/null
+s
+x
+
+2: run im2uv
+MAPS_im2uv -i test07_Brightness.fts -o test07_Visibility.dat -n 0.61685028
+
+3: run visgen (run maps2uvfits after this. output gets overwritten each time)
+visgen -n test07 -s MWA_ED -A $SIM/array/mwa_32_crossdipole_gp.txt -G test07_Visibility.dat -V obs_spec_test07 -N -m 0 > visgen.out
+
+visgen -I iri_1998_120_0024.fit -n test07 -s MWA_ED -A $SIM/array/mwa_32_crossdipole_gp.txt -G test07_Visibility.dat -V obs_spec_test07 -N -m 0 > visgen.out
+
+visgen -n test07 -s MWA_ED -A $SIM/array/mwa_32_crossdipole_gp.txt -V obs_spec_test07 -N -m 0 -Z -O oob_list.txt > visgen.out
+
+visgen -I iri_1998_120_0024.fit -n test07 -s MWA_ED -A $SIM/array/mwa_32_crossdipole_gp.txt -V obs_spec_test07 -N -m 0 -Z -O oob_list.txt > visgen.out
+
+visgen -I iri_1998_120_0024.fit -i iono_settings.txt -n test07 -s MWA_ED -A $SIM/array/mwa_32_crossdipole_gp.txt -V obs_spec_test07 -N -m 0 -Z -O oob_list.txt > visgen.out
+
+4: run maps2uvfits
+maps2uvfits test07.vis test07_noiono.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_32_crossdipole_gp.txt
+maps2uvfits test07.vis test07_withiono.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_32_crossdipole_gp.txt
+maps2uvfits test07.vis test07_oob_noiono.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_32_crossdipole_gp.txt
+maps2uvfits test07.vis test07_oob_withiono.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_32_crossdipole_gp.txt
+
+5: image the snapshot:
+example in miriad, but you can use whatever you want.
+miriad
+rm -rf test07*.uv
+fits in='test07_noiono.uvfits' out='test07_noiono.uv' op='uvin'
+fits in='test07_withiono.uvfits' out='test07_withiono.uv' op='uvin'
+fits in='test07_oob_noiono.uvfits' out='test07_oob_noiono.uv' op='uvin'
+fits in='test07_oob_withiono.uvfits' out='test07_oob_withiono.uv' op='uvin'
+rm -rf test07*.beam test07*.map
+invert vis=test07_noiono.uv beam=test07_noiono.beam map=test07_noiono.map imsize=512,512
+invert vis=test07_withiono.uv beam=test07_withiono.beam map=test07_withiono.map imsize=512,512
+invert vis=test07_oob_noiono.uv beam=test07_oob_noiono.beam map=test07_oob_noiono.map imsize=512,512
+invert vis=test07_oob_withiono.uv beam=test07_oob_withiono.beam map=test07_oob_withiono.map imsize=512,512
+convert to an image:
+fits in='test07_oob_noiono.map' out='test07_oob_noiono.fits' op='xyout'
+fits in='test07_oob_withiono.map' out='test07_oob_withiono.fits' op='xyout'
+
+fits in='test07_noiono.map' out='test07_noiono.fits' op='xyout'
+fits in='test07_withiono.map' out='test07_withiono.fits' op='xyout'
+
+fit gaussian to vis:
+uvfit vis=test07_noiono.uv object=gaussian spar=1.,7200.,30000.,10.,10.,0
+uvfit vis=test07_withiono.uv object=gaussian spar=1.,8500.,30000.,10.,10.,0
+uvfit vis=test07_oob_noiono.uv object=gaussian spar=1.,0.,0.,10.,10.,0
+uvfit vis=test07_oob_withiono.uv object=gaussian spar=1.,-1250,0.,10.,10.,0

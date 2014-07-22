@@ -1,0 +1,60 @@
+Test 08
+=======
+
+Purpose: test of all-sky 500-tile (like) system with phased array dipole-over-groundplane antennas
+(unpolarised) in the stations. The gains of the dipoles in the stations are not all equal and have random amp
+and phase errors.
+This sim uses a pre-canned list of point sources.
+
+In this sim we "trick" LOsim and visgen into doing all-sky sims even though the input FOV is listed as
+412530 arcsec. Note that 412530 is exactly 2 radian. Since the input sky is sine projected, the pixel angular size
+is only correct at the center of the image. Specifying FOV of 2 radian effectively makes the input image 2pi radian,
+hence all-sky.
+
+Use perl script "make_ant_errs_dualpol.pl" to make a bunch of .layout files with erroneous gains.
+e.g.: perl -w make_ant_errs_dualpol.pl 500 0.2 0.34 -d
+then: cp lfd_crossdipole_gp???.layout $SIM/stn_layout/
+Use perl script "make_array_file.pl" to create array file with new layouts: e.g.
+perl -w make_array_file.pl $SIM/array/mwa_random_500_crossdipole_gp.txt > $SIM/array/mwa_random_500_crossdipole_gp_err.txt
+
+To run:
+0: don't forget to source sim_setup.csh (or .sh)
+
+1: run LOsim
+LOsim test08 > /dev/null
+s
+x
+
+2: run im2uv
+MAPS_im2uv -i test08_Brightness.fts -o test08_Visibility.dat -n 4
+
+3: run visgen
+#visgen -n test08 -s MWA_ED -A $SIM/array/mwa_random_500_crossdipole_gp_err.txt -G test08_Visibility.dat -V obs_spec_test08 -N -m 0 > visgen.out
+visgen -n test08 -s MWA_ED -A $SIM/array/mwa_random_500_crossdipole_gp.txt -V obs_spec_test08 -N -m 0 -O oob_list.txt -Z > visgen.out
+visgen -n test08 -s MWA_ED -A $SIM/array/mwa_random_500_crossdipole_gp_err.txt -V obs_spec_test08 -N -m 0 -O oob_list.txt -Z > visgen.out
+
+4: run maps2uvfits
+maps2uvfits test08.vis test08.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_random_500_crossdipole_gp_err.txt
+mv test08.uvfits test08big_lst_0.00000_freq_140.000_00.uvfits
+ OR
+mv test08.uvfits test08big_gainerr_lst_0.00000_freq_140.000_00.uvfits
+
+5: image the snapshot:
+example in miriad, but you can use whatever you want.
+miriad
+rm -rf test08.uv
+fits in='test08big_lst_0.00000_freq_140.000_00.uvfits' out='test08.uv' op='uvin'
+fits in='test08big_gainerr_lst_0.00000_freq_140.000_00.uvfits' out='test08.uv' op='uvin'
+rm -rf test08.beam test08.map
+invert vis=test08.uv beam=test08.beam map=test08.map imsize=2048,2048 stokes=xx
+
+optionally clean and restore:
+rm -rf test08.clean test08.restor
+clean map=test08.map beam=test08.beam out=test08.clean niters=1000 options=positive
+restor model=test08.clean beam=test08.beam map=test08.map out=test08.restor
+convert to an image:
+fits in='test08.map' out='test08.fits' op='xyout'
+
+find point sources:
+uvfit vis=test08err.uv object=point spar=1.7,0,23152
+imsad in=test08.restor device='/xs' options=hist,gauss clip=20

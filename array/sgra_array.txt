@@ -1,0 +1,14 @@
+# array layout file (new format)
+# blank lines and lines beginning with # are ignored
+# names should not contain spaces
+# Format: station_name X Y Z layoutname el_low el_high SEFD
+# info from Vincent:
+# stname        x              y             z           stlayout  low_el  high_el  sefd
+Hawaii8    -5464523.400   -2493147.080   2150611.750   Hawaii8_20.8m_unpol  15  85  3300 
+SMTO       -1828796.200   -5054406.800   3427865.200   SMTO_10m_unpol       15  85  11900
+CARMA8     -2397431.300   -4482018.900   3843524.500   CARMA8_26.9m_unpol   15  85  7500 
+LMT        -768713.9637   -5988541.7982  2063275.9472  LMT_50m_unpol        15  85  4000       
+ALMA50      2225037.1851  -5441199.1620 -2479303.4629  ALMA50_84.7m_unpol   15  85  110 
+PV          5088967.9000  -301681.6000   3825015.8000  PV_30m_unpol         15  85  2900
+PdBI        4523998.40     468045.240    4460309.760   PdBI_36.7m_unpol     10  85  1600          
+SPT         0.0            0.0          -6359587.3     SPT_12m_unpol        15  85  10000  

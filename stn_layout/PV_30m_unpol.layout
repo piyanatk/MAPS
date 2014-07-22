@@ -1,0 +1,5 @@
+# Ideal parabolic dish with unpolarised receptor.
+# parameters are: N,E,Up,type,gain,phase,diameter_meters
+# NAME PV_30m_unpol
+0.0 0.0 0.0 3 1.0 0.0 30.0
+

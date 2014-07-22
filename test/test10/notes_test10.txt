@@ -1,0 +1,68 @@
+Test 10
+=======
+
+Purpose: Basic test of all-sky 500-tile (like) system with unpolarised phased array
+dipole-over-groundplane antennas in the stations where the stations are phased away from the zenith.
+Actually, it is making the phased array antennas point to a different position than the input phase center.
+This is done with the "PNT_center_RA" and "PNT_center_Dec" args in the obs_spec file. Note the decimal hours
+and degrees not the hour-minute-second format.
+
+No ionosphere.
+This sim uses a pre-canned list of point sources.
+
+In this sim we "trick" LOsim and visgen into doing all-sky sims even though the input FOV is listed as
+412530 arcsec. Note that 412530 is exactly 2 radian. Since the input sky is sine projected, the pixel angular size
+is only correct at the center of the image. Specifying FOV of 2 radian effectively makes the input image 2pi radian,
+hence all-sky.
+
+To run:
+0: don't forget to source sim_setup.csh (or .sh)
+
+1: run LOsim
+LOsim test10 > /dev/null
+s
+x
+
+2: run im2uv
+MAPS_im2uv -i test10_Brightness.fts -o test10_Visibility.dat -n 4
+
+3: run visgen
+; for LOsim etc.
+visgen -n test10 -s MWA_ED -A $SIM/array/mwa_random_500_dipole_gp.txt -G test10_Visibility.dat -V obs_spec_test10 -N -m 1 > visgen.out
+; for OOB
+visgen -n test10 -s MWA_ED -A $SIM/array/mwa_random_500_dipole_gp.txt -Z -V obs_spec_test10 -N -m 1 -O oob_list.txt > visgen.out
+
+4: run maps2uvfits
+maps2uvfits test10.vis test10.uvfits -26.4311 117.357 400.0 $SIM/array/mwa_random_500_dipole_gp.txt
+
+5: image the snapshot:
+example in miriad, but you can use whatever you want.
+miriad
+rm -rf test10.uv
+fits in='test10.uvfits' out='test10.uv' op='uvin'
+rm -rf test10.beam test10.map
+invert vis=test10.uv beam=test10.beam map=test10.map imsize=2048,2048 cell=201.43
+convert to an image:
+fits in='test10.map' out='test10.fits' op='xyout'
+
+
+For pointing centre RA: 0.5, DEC: -41.6 (with ra=0 at meridian)
+alt,az of pointing centre = 73.623540,200.25443 degs
+results for LOsim sources:
+after imaging, point sources should have the following total fluxes. Use miriad task 'uvfit' to get total flux
+from a slightly resolved gaussian:
+uvfit vis=test10.uv object=gaussian spar=1.,0.,0.,10.,10.,0
+total flux = 0.3273
+uvfit vis=test10.uv object=gaussian spar=1.,54000.,0.,10.,10.,0
+total flux = 0.2572
+uvfit vis=test10.uv object=gaussian spar=1.,0.,-54000.,10.,10.,0
+total flux = 0.9662
+
+
+results for OOB sources:
+uvfit vis=test10.uv object=point spar=1.,0.,0.
+total flux = 0.335. expect 0.332
+uvfit vis=test10.uv object=point spar=1.,-53400,0.0
+flux = 0.389, expect: 0.386
+uvfit vis=test10.uv object=point spar=1.,0,-54000.0
+flux=1.013, expect: 1.008

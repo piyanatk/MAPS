@@ -1,0 +1,4 @@
+# list of "out of beam" (but can acutally be anywhere) sources
+# format: RA (decimal hours), DEC (decimal degs), Stokes I,Q,U,V
+
+ 0.385694 -25.044444 6.664058 0 0 0

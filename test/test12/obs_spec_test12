@@ -1,0 +1,15 @@
+FOV_center_RA = 16:36:31.011362
+FOV_center_Dec = +62:40:10.09908
+// FOV in arcsec
+FOV_size_RA = 3600.0
+FOV_size_Dec = 3600.0
+Corr_int_time = 2.0
+Corr_chan_bw = 0.05
+Time_cells = 4
+Freq_cells = 4
+
+Scan_start = 2008:56:15:30:00
+  Scan_duration = 8.0
+  Channel = 1650.49:1.0
+Endscan
+

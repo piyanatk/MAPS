@@ -1,0 +1,33 @@
+# Actual layout of the mwa 32T system. (East, North. No Z coords)
+-038.26   140.36  lfd_basic
+-102.30   156.08  lfd_basic
+-095.92   124.66  lfd_basic
+-077.86   097.43  lfd_basic
+-125.40   100.62  lfd_basic
+-116.81   065.18  lfd_basic
+-160.53   054.72  lfd_basic
+-120.68   016.33  lfd_basic
+-105.43  -021.91  lfd_basic
+-137.81  -088.99  lfd_basic
+-106.99  -117.34  lfd_basic
+-081.73  -111.03  lfd_basic
+-087.14  -134.24  lfd_basic
+-063.15  -111.76  lfd_basic
+-038.71  -090.85  lfd_basic
+-024.09  -112.88  lfd_basic
+-002.85  -149.73  lfd_basic
+ 022.68  -093.58  lfd_basic
+ 059.38  -085.44  lfd_basic
+ 122.75  -077.33  lfd_basic
+ 142.91  -083.04  lfd_basic
+ 132.38  -033.43  lfd_basic
+ 176.26   016.87  lfd_basic
+ 177.05   023.43  lfd_basic
+ 170.64   020.26  lfd_basic
+ 107.31   033.03  lfd_basic
+ 121.05   041.47  lfd_basic
+ 089.57   061.27  lfd_basic
+ 121.73   103.56  lfd_basic
+ 045.22   086.43  lfd_basic
+ 032.64   126.03  lfd_basic
+ 004.22   172.95  lfd_basic

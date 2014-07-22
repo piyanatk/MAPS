@@ -1,0 +1,9 @@
+# list of "out of beam" (but can acutally be anywhere) sources
+# format: RA (decimal hours), DEC (decimal degs), Stokes I,Q,U,V
+# center of beam
+#16.608614     62.669472     1.0  0 0 0
+# First null
+#16.608614     63.0912       1.0  0 0 0
+16.576057105  62.759969777  5.00 0 0 0
+16.641171429  62.578974155  3.80 0 0 0
+

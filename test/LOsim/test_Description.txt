@@ -1,0 +1,18 @@
+// This is a test file
+// Lines beginning with "//" are comments and are ignored
+
+Simulation name = test
+Title = Test the LOFAR simulator (LOsim)
+
+Brightness grid x-N = 1024
+Brightness grid y-N = 1024
+
+Visibility grid x-log2N = 12
+Visibility grid y-log2N = 12
+
+Source list name = 1sourceOffset
+Observation name = test
+// Image name = test
+Out-of-beam source list name = ???1
+Station list name = ShepTest
+Ionosphere parameters name = ???3

@@ -1,0 +1,116 @@
+Test 04
+=======
+
+Purpose: Basic test of wide field MWA 32 (like) system with simple crossed dipole stations.
+Check for cross pol products far from zenith.
+FOV: 30 degrees
+to change FOV:
+change x,y size in _Description file
+change FOV in Observation file
+change FOV in visgen obs_spec file
+change size of file from maps_im2uv and scaling constant.
+
+To run:
+1: run LOsim
+LOsim test04
+s
+x
+
+2: run im2uv
+MAPS_im2uv -i test04_Brightness.fts -o test04_Visibility.dat -n 9.86961
+
+3: run visgen
+visgen -n test04 -s MWA_ED -A $SIM/array/mwa_32_crossdipole_gp.txt -G test04_Visibility.dat -V obs_spec_test04 -N -m 0 > visgen.out
+
+4: run maps2uvfits
+maps2uvfits test04.vis test04.uvfits $SIM/array/mwa_32_crossdipole_gp.txt
+
+5: image the snapshot:
+example in miriad, but you can use whatever you want.
+miriad
+rm -rf test04.uv
+fits in='test04.uvfits' out='test04.uv' op='uvin'
+rm -rf test04.beam test04.clean test04?.map test04.restor
+invert vis=test04.uv beam=test04.beam map=test04i.map,test04q.map,test04u.map,test04v.map imsize=512,512 stokes=i,q,u,v
+optionally clean and restore:
+clean map= beam=test04.beam out=test04.clean niters=1000
+restor model=test04.clean beam=test04.beam map=test04.map out=test04.restor
+
+Expected result:
+
+testing complex station beams:
+- run visgen with beam_printed in makebeam.c = 1 or 0
+grep -A 32 "Complex beam for station 0 pol index 0" visgen.out > /tmp/beam00
+grep -A 32 "Complex beam for station 1 pol index 0" visgen.out > /tmp/beam10
+grep -A 32 "Complex beam for station 0 pol index 1" visgen.out > /tmp/beam01
+grep -A 32 "Complex beam for station 1 pol index 1" visgen.out > /tmp/beam11
+grep -A 32 "Complex beam for station 0 pol index 2" visgen.out > /tmp/beam02
+grep -A 32 "Complex beam for station 1 pol index 2" visgen.out > /tmp/beam12
+grep -A 32 "Complex beam for station 0 pol index 3" visgen.out > /tmp/beam03
+grep -A 32 "Complex beam for station 1 pol index 3" visgen.out > /tmp/beam13
+
+load with IDL ascii template below.
+
+restore,'template.dat'
+d = read_ascii('/tmp/beam00',template=template)
+b00 = d.field01
+d = read_ascii('/tmp/beam10',template=template)
+b10 = d.field01
+d = read_ascii('/tmp/beam01',template=template)
+b01 = d.field01
+d = read_ascii('/tmp/beam11',template=template)
+b11 = d.field01
+d = read_ascii('/tmp/beam02',template=template)
+b02 = d.field01
+d = read_ascii('/tmp/beam12',template=template)
+b12 = d.field01
+d = read_ascii('/tmp/beam03',template=template)
+b03 = d.field01
+d = read_ascii('/tmp/beam13',template=template)
+b13 = d.field01
+
+
+testing complex Mueller matrix products in IDL:
+- run visgen with -m -2
+grep -A 33 "Product of Station Beams 0 and 1 for Mueller matrix element 00" visgen.out > /tmp/Mueller00
+grep -A 33 "Product of Station Beams 0 and 1 for Mueller matrix element 01" visgen.out > /tmp/Mueller01
+grep -A 33 "Product of Station Beams 0 and 1 for Mueller matrix element 04" visgen.out > /tmp/Mueller04
+grep -A 33 "Product of Station Beams 0 and 1 for Mueller matrix element 06" visgen.out > /tmp/Mueller06
+grep -A 33 "Product of Station Beams 0 and 1 for Mueller matrix element 08" visgen.out > /tmp/Mueller08
+grep -A 33 "Product of Station Beams 0 and 1 for Mueller matrix element 09" visgen.out > /tmp/Mueller09
+
+make an ascii template in IDL (skip the first line)
+save,template,filename='template.dat'
+restore,'template.dat'
+d = read_ascii('/tmp/Mueller00',template=template)
+m00 = d.field01
+d = read_ascii('/tmp/Mueller01',template=template)
+m01 = d.field01
+d = read_ascii('/tmp/Mueller04',template=template)
+m04 = d.field01
+d = read_ascii('/tmp/Mueller06',template=template)
+m06 = d.field01
+d = read_ascii('/tmp/Mueller08',template=template)
+m08 = d.field01
+d = read_ascii('/tmp/Mueller09',template=template)
+m09 = d.field01
+
+
+; compare computed antenna Jones matrices with expected theoretically
+.comp antennas
+MAKE_AZZA_ARRAYS_FOV,32,az,za,mask,20.
+lat=-26.53
+altaz2hadec,(!pi/2-za)*180/!pi,az*180/!pi,lat,ha,dec ; results in degrees
+altaz2hadec,80.,30.,-26.53,ha,dec
+lr=lat*!pi/180.
+dr = dec*!pi/180
+hr = ha*!pi/180.
+px = cos(lr)*cos(dr)+sin(lr)*sin(dr)*cos(hr)
+py = -sin(lr)*sin(hr)
+qx = sin(dr)*sin(hr)
+qy=cos(hr)
+pp = atan(py/px)
+pq = atan(qy/qx)
+print,px,py,qx,qy,cos(pp-pq)
+
+px should be the same as b00

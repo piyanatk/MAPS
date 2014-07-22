@@ -1,0 +1,16 @@
+* This is an example of a file specifying the layout of antennas comprising a
+* station.  Antenna locations are specified in a 3-D rectangular coordinate
+* system (north, east, height).  The origin of the coordinate system is the
+* station location, and the (north, east) plane is tangent to the earth's
+* surface at that point.  The height coordinate is positive away from the center
+* of the earth.  All dimensions are in meters.  The intention is to have a
+* limited number of station layout files, which are repeatedly referenced in any
+* given array specification (i.e. multiple stations use the same layout).
+*
+
+NAME simple
+
+* north   east   height
+  -25.0  20.0    0.0
+  -40.0  10.0    0.0
+   35.0 -15.0    0.0

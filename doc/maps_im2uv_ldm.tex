@@ -1,0 +1,190 @@
+\documentclass[letterpaper, twoside, 12pt]{article}
+\usepackage{amsmath}
+\setlength{\parindent}{0.0in} % Force zero paragraf indentation
+%\title{MASSACHUSETTS INSTITUTE OF TECHNOLOGY (HAYSTACK OBSERVATORY)}
+\title{MAPS\_im2uv: Sky Brightness to Visibility Converter}
+
+\author{Leonid Benkevitch}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+A part of the MAPS (MIT Array Performance Simulator) package, the MAPS\_im2uv 
+program reads a FITS sky brightness image file, reorders the data, Fourier 
+transform it and writes it out in the binary format expected by {\tt visgen}, 
+a kernel MAPS program. If an appropriate source file is given, a point source is
+ added to the uv grid for each source in the file. In this manual main 
+features of MAPS\_im2uv are explained.   
+\end{abstract}
+
+\section*{Running from the command line}
+
+\verb,MAPS_im2uv -i infile -o outfile [OPTIONS]...,\\
+
+In its most basic mode of operation, MAPS\_im2uv will read a brightness 
+image from the FITS file \verb infile, convert it into a visibility 
+image using an FFT, and save the result in the binary file \verb outfile. It is optionally possible to embed into the visibility file the FFT image of one or more point sources, the sky coordinates and flux density of which are specified in a sourcefile (option {\tt-s}). In this case, the specifications of the frequency, observing latitude, and LST (options -{\tt f}, {\tt -h}, and {\tt -l}) are mandatory. \\
+
+If the brightness of the input FITS image is in units other than 
+$\tt Jy\ steradian^{-1}$, a multiplicative constant invoked by the 
+option {\tt-n} (``normalizer'') must be used to convert the brightness to default units. If the input FITS file is more than two-dimensional and it contains several brightness images for different frequencies, Stokes parameters etc., the indices in option {\tt-a} specify which image plane is to be read. Option {\tt-q} prints a table of all the axes in the input FITS file. With option {\tt-d} the program prints diagnostics at runtime. \\
+
+\subsection*{Options and interpretations}
+ 
+\begin{tabbing}
+{\tt-i, --inputfilename} \hspace{10mm} \= input FITS file name \\
+{\tt-o, --outputfilename} \> output file name (usually *.dat) \\
+{\tt-a, --axes} \hspace{5mm} \= provide subscripts for multidimensional FITS files \\ 
+\>For example, if file holds images for 12 different frequencies \\
+\>and 4 Stokes parameters for each frequency, then the option \\
+\> {\tt--axes [5,2]} asks the program to read the image for the 5th \\
+\> frequency channel and 2nd Stokes parameter \\
+{\tt-s, --sourcefilename} \hspace{6mm} \= point source file name \\
+{\tt-f, --frequencyofsource} \> frequency of source in MHz    \\
+{\tt-h, --lstofsource} \> local sidereal time in radians\\
+{\tt-l, --latitude} \hspace{6mm} \= observing latitude of point sources\\
+{\tt-n, --normalizer} \> multiplicative constant to bring \\
+		\> brightness to units of $Jy/rad^2$ \\
+{\tt-t, --ewtranspose} \> flip image east-west before processing\\
+{\tt-d, --debug} \> print some variables and other information	\\
+{\tt-m, --help} \> print the help message similar to this text \\
+{\tt-q, --query} \> print table of all axis names and dimensions \\
+ \>from the header of the input FITS file (at option {\tt-i}) \\
+\end{tabbing}
+
+\subsection*{Details}
+
+\subsubsection*{The input FITS file}
+The input FITS file name is placed after the {\tt-i} option. The brightness image data must reside in the Primary HDU (Primary Array) of the file. The current version of MAPS\_im2uv requires that the image be square, having equal numbers of pixels along {\tt RA} and {\tt DEC} axes. In the simplest case the input FITS 
+file only contains one two-dimensional image with the axes order:
+\begin{tabbing}
+{\tt RA} \hspace{5mm} \= - right ascension,\\
+{\tt DEC} \> - declination.
+\end{tabbing}
+However, the input FITS file may store multiple images for several 
+frequencies, polarizations, etc. The Primary Array in such FITS files is 
+multidimensional. MAPS\_im2uv can read up to 16-dimensional FITS files with 
+one restriction: the image axes, {\tt RA} and {\tt DEC}, must be the very 
+first axes of the array (this implies that the multiple images are stored 
+contiguously). All other axes can be ordered arbtrarily. For example, an 
+input FITS file can have the axes as follows:
+\begin{tabbing}
+{\tt RA} \hspace{10mm} \=  2048 \hspace{5mm} \= - right ascension,\\
+{\tt DEC} \>  2048 \> - declination,\\
+{\tt FREQ} \> 29 \> - frequency,\\
+{\tt STOKES} \> 4\> - Stokes parameters,
+\end{tabbing}
+where the numbers are for dimensions along each of the axes.
+
+Over one run, MAPS\_im2uv can only process one image indexed by the 
+{\tt-a} option. 
+Continuing the example, in order to read the image at the $17^{th}$ frequency 
+and $3^{rd}$ Stokes parameter, one needs to include the option\\
+
+{\tt -a[17,3]} or \ {\tt -axes [17,3]}. \\
+
+Note that the indices of the rightmost axes can be omitted to be regarded as
+equal to one 
+by default. In the previous example, options \\
+
+{\tt -a[17]} and {\tt -a[17,1]}\\
+
+are equivalent. Also, if the input FITS file is multidimensional and there is no {\tt -a} option on the command line, then the first brightnness image will be read, which is equivalent to the action of {\tt -a[1,1,1,...,1]}. \\ 
+
+Option {\tt -q} ({\tt -query}), when inserted after the {\tt -i} option,
+can help to quickly reveal what are the dimensionality and axes of the input FITS file. Note that if the {\tt -q} option is on the command line,  MAPS\_im2uv only prints out the table of FITS file axes (names and dimensions) and quits without any further processing.
+
+\subsubsection*{Output file}
+The desired output file name should be specified after the {\tt -o} option. The program stores the FFT visibility image  in binary format. Commonly, the output file name is given a {\tt .dat} extension.
+
+\subsubsection*{Source file and related parameters}
+One or more point sources can be added directly to the output FFT image. The source file name specifying the properties of these point sources 
+is specified after the option {\tt-s}. This text file contains the list of point sources, one per line. The lines have the following format (in terms of the C scanf() function):
+\begin{verbatim}
+"%f %f %s %f %f %f", &az, &el, sourcename, &fd, &ref_freq, &spec_index.
+\end{verbatim}
+With the source file name three other options related to the point sources added must be present on the command line:\\
+
+{\tt-f}, the frequency; \\
+{\tt-h}, the local sidereal time; \\
+{\tt-l}, the observing latitude. \\
+
+\subsubsection*{Normalization constant}
+The brightness units of input FITS files can be expressed in arbitrary units. However, MAPS\_im2uv requires that the brightness image be converted to Jansky per steradian. If the FITS file header has a keyword {\tt BUNIT} with non-blank string value, MAPS\_im2uv attempts to interpret it and convert the image to the units of ${\tt Jy/rad^2}$. Examples of possible {\tt BUNIT} values are\\
+
+${\tt Jy/beam}$,\\
+${\tt Jy/pixel}$,\\
+${\tt Jy/deg^2}$.\\
+
+If either {\tt BUNIT} is not present in the header or it has an unrecognized value or has blank value, MAPS\_im2uv issues the warning message saying that it assumes the brightness units are ${\tt Jy/rad^2}$ and continues.\\
+
+The user can override this default behavior by providing the option {\tt -n} followed by a numerical normalization constant. Then, prior to the processing, each pixel of the image will be multiplied by the constant reducing it to ${\tt Jy/rad^2}$, and the value of the {\tt BUNIT} keyword in the file header will be disregarded.\\
+
+Please note that this feature has not been implemented yet for all the units mentioned. If MAPS\_im2uv does not understand the units from a particular FITS file and reports ``assuming ${\tt Jy/rad^2}$'', one should manually calculate the normalization constant and apply it using the {\tt -n} option.
+
+\subsubsection*{East-West image transposition}
+In Astronomy, sky images are conventionally plotted in ({\tt RA},{\tt DEC}) coordinates with {\tt RA} increasing from right to left, and {\tt DEC} increasing from bottom to top. 
+%Such a coordinate system is natural for an observer in the 
+%northern Hemisphere oriented face to the south and looking into the 
+%night sky. Obviously enough, the observer's east will be on the right
+%and west on the left, 
+%while the north in upward direction.
+Most of the astronomical sky images at the computer storage level obey this convention: the {\tt RA} of pixels in FITS arrays decrease from left to right --- i.e., from the west to the east.\\
+
+However, one should be warned that the MAPS package at its current state 
+assumes the opposite {\tt RA} direction, where it increases from left to 
+right, the west being on the left and the east on the right (like on 
+geographical maps). This issue is planned to be corrected in near future. 
+Until it is done, the user can use the option \\
+
+{\tt -t} or {\tt --ewtranspose} \\
+
+to make MAPS\_im2uv east-west transpose (or simply east-west flip) the 
+brightness image read from the input FITS file to render its mirror image 
+before the processing. The action is analogous to that of the Matlab function 
+{\tt fliplr()}. 
+
+
+\section*{Some examples}
+In the examples below the user command input lines start with the \$ sign.
+
+\begin{tabbing}
+{\tt \$ MAPS\_im2uv.exe -i test\_map.fits -o test\_map.dat} \\
+   \hspace{10mm} \=  Convert the brightness image {\tt test\_map.fits} to 
+visibilities (i.e., FFT it) and save \\ 
+   \> it in the binary file {\tt test\_map.dat}.\\
+\\
+{\tt \$ MAPS\_im2uv.exe -i test4d\_map.fits -q} \\
+{\tt CTYPE1: RA---SIN,       2048} \\
+{\tt CTYPE2: DEC--SIN,       2048} \\
+{\tt CTYPE3: FREQ-LSR,       4} \\
+{\tt CTYPE4: STOKES,         1} \\
+
+   \> Print a table of all the axis names and dimensions from the file \\ 
+{\tt test4d\_map.fits} \\
+\\
+{\tt \$ MAPS\_im2uv.exe -i test4d\_map.fits -o test4d\_map.dat -a[3,1]}\\ 
+   \> Convert the brightness image of the $3^{rd}$ frequency channel \\
+   \> and first Stokes parameter from the input file {\tt test4d\_map.fits} \\
+   \> to visibilities and save the result in {\tt test4d\_map.dat}.\\
+\\
+{\tt \$ MAPS\_im2uv.exe -i test4d\_map.fits -o test4d\_map.dat -a[3]}\\ 
+   \> Same action as in the previous example, because all the \\ \> dimensions omitted in the {\tt -a} option are assumed to be unity by default.\\
+\\
+{\tt \$ MAPS\_im2uv.exe -i modelsky.fits -o modelsky.dat -n 3.59e5}\\ 
+\> Adjust the units of the brightness image from {\tt modelsky.fits}, \\
+\> converting them to ${\tt Jy/rad^2}$ via the multiplicative constant \\ 
+\> 3.59e5, using the {\tt -n} option; then perform the FFT and save the \\
+\> the resulting visibility data in {\tt modelsky.dat}.
+\\
+\end{tabbing}
+
+\end{document}
+
+
+
+
+
+

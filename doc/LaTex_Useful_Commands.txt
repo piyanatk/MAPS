@@ -1,0 +1,65 @@
+Paragraph Indenting and Spacing: 
+By default, LaTeX indents each paragraph. If you don't like this and want to suppress paragraph indenting, you also have to increase the spacing between paragraphs so that paragraph boundaries are clear. Putting the following two lines in the preamble of your document (i.e., between the \documentstyle line and the \begin{document} line) will get you what you want:
+
+    \setlength{\parindent}{0.0in}
+    \setlength{\parskip}{0.1in}
+
+If you want to put a small piece of text in a specific type style, you can do
+it as follows:
+
+	{\em This text will be in italics}
+
+	{\bf This text will be bold!}
+
+	{\tt This will be in a "typewriter font"}
+
+If you want to put larger amounts of text into these type styles, you can use
+\begin and \end commands; i.e.:
+
+	\begin{em}
+	All this text
+	will
+	be italicized
+	\end{em}
+
+If you want to be able to "stack" type styles (bold and italic, etc), then you need to use slightly different commands:
+
+    {\bffamily This is in bold {\em This is italic bold}}
+
+OR
+
+    \textbf{This text is only bold but \emph{this} was also italics}
+
+
+Producing White Space in LaTeX
+
+To produce (horizontal) blank space within a paragraph, use \hspace, followed by the length of the blank space enclosed within braces. The length of the skip should be expressed in a unit recognized by LaTeX. These recognized units are given in the following table:
+
+    pt  point         (1 in = 72.27 pt)
+    pc  pica          (1 pc = 12 pt)
+    in  inch          (1 in = 25.4 mm)
+    bp  big point     (1 in = 72 bp)
+    cm  centimetre    (1 cm = 10 mm)
+    mm  millimetre
+    dd  didot point   (1157 dd = 1238 pt)
+    cc  cicero        (1 cc = 12 dd)
+    sp  scaled point  (65536 sp = 1 pt)
+
+Thus to produce a horizontal blank space of 20 mm in the middle of a paragraph one would type \hspace{20 mm}.
+
+If LaTeX decides to break between lines at a point in the document where an \hspace is specified, then no white space is produced. To ensure that white space is produced even at points in the document where line breaking takes place, one should replace \hspace by \hspace*
+
+To produce (vertical) blank space between paragraphs, use \vspace, followed by the length of the blank space enclosed within braces. Thus to obtain
+
+    [GIF Image] 
+
+one should type
+
+    This is the first paragraph of some text.  It is
+    separated from the second paragraph by a vertical skip of
+    10 millimetres.
+
+    \vspace{10 mm}
+
+    This is the second paragraph.
+
