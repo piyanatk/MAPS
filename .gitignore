@@ -1,0 +1,8 @@
+.idea
+*.o
+*.dSYM
+/bin/*
+/lib/*
+novas.h
+novascon.h
+solarsystem.h
