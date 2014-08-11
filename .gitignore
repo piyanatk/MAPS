@@ -4,6 +4,6 @@
 /utilities/libutil.a
 /bin/*
 /lib/*
-novas.h
-/novasc-201/novascon.h
+/include/novas.h
+/include/novascon.h
 solarsystem.h
