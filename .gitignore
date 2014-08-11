@@ -6,4 +6,4 @@
 /lib/*
 /include/novas.h
 /include/novascon.h
-solarsystem.h
+/include/solarsystem.h
