@@ -5,5 +5,5 @@
 /bin/*
 /lib/*
 novas.h
-/include/novascon.h
+/novasc-201/novascon.h
 solarsystem.h
