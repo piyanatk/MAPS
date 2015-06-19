@@ -920,14 +920,18 @@ int main(int argc, char *argv[]) {
 
   arr_size = (n_cols/2 + 1);
 
+  /* FFT Normalization is no longer required as we use FHD to image.
+  /* The normalization is automatically applied in FHD
+  /* ---------------------------------------------------------------------------
   /*
    * The normalization is required after the FFT,
    * since FFTW3 explicitly states that its functions
    * make no normalization for neither FFT nor IFFT. 
    */
-  normalizer = normalizer/(n_cols*n_rows); /* This is the original normalizer */
+  /* normalizer = normalizer/(n_cols*n_rows); /* This is the original normalizer */
   /* normalizer = normalizer/sqrt(n_cols*n_rows); // Now it's clearly wrong */
-
+  /* ---------------------------------------------------------------------------
+  
   /* COMMENTED OUT:  Prepare ASCII output of the uv-image */
   /* FILE *fh; */
   /* long i1; */
